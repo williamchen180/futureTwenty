@@ -2,7 +2,7 @@
 
 # history,TX00,36458,20200603,94512,322000,1124600,1124700,1124700,7,0,+7
 
-def converToTrend(target, ext='大台'):
+def converToTrend(target, ext='大台', big=20, little=5):
     kmin = {}
     with open('data/' + ext + '/morning/' + target + '_min.csv', 'w') as fmin:
         with open('data/' + ext + '/morning/' + target + '_converted.csv', 'w') as fout:
@@ -41,9 +41,8 @@ def converToTrend(target, ext='大台'):
 
                     if abs(vol) > big:
                         kmin[minute][1] = kmin[minute][1] + vol
-                    else:
-                        kmin[minute][2] = kmin[minute][2] + vol
-
+                    if abs(vol) < little:
+                        kmin[minute][1] = kmin[minute][1] + vol
 
         for k in sorted(kmin.keys()):
             fmin.write('%s, %d, %d, %d\n' % (k, kmin[k][0], kmin[k][1], kmin[k][2]))
@@ -51,6 +50,5 @@ def converToTrend(target, ext='大台'):
 
 
 target = '20200603'
-big = 20
-converToTrend(target)
-converToTrend(target, ext='小台')
+converToTrend(target, little=10)
+converToTrend(target, ext='小台', big=80, little=40)
