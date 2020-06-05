@@ -14,7 +14,7 @@ def convertToTrend(target, ext='大台', big=20, little=5):
         with open(read_file) as f:
             l = f.readline()
 
-            fout.write('\ufeff時間,大單,散單\n')
+            fout.write('\ufeff時間,大單,散單,指數\n')
 
             for l in f.readlines():
                 x = l.split(',')
@@ -22,9 +22,6 @@ def convertToTrend(target, ext='大台', big=20, little=5):
                 if x[4] < '08:45:00':
                     continue
 
-                x[6] = str(float(x[6])/100)
-                x[7] = str(float(x[7])/100)
-                x[8] = str(float(x[8])/100)
 
                 #print(x)
                 if x[11][0] == '#':
@@ -57,9 +54,16 @@ def convertToTrend(target, ext='大台', big=20, little=5):
                 if abs(vol) < little:
                     kmin[time][1] = kmin[time][1] + vol
 
+                kmin[time][2] = x[8]
 
+
+        last_k = ''
         for k in sorted(kmin.keys()):
-            fout.write('%s, %d, %d\n' % (k, kmin[k][0], kmin[k][1]))
+            if kmin[k][2] == 0:
+                kmin[k] = kmin[last_k]
+                print('set to last k: ' + last_k)
+            fout.write('%s, %d, %d, %s\n' % (k, kmin[k][0], kmin[k][1], kmin[k][2]))
+            last_k = k
 
 
 target = '20200603'
